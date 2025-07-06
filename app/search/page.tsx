@@ -1,0 +1,68 @@
+import React from "react";
+import Link from "next/link";
+import { getProducts } from "@/utils/get-products";
+import { Product } from "@/constant/product";
+import PaginationControls from "@/components/all-products/pagination";
+import { SortDropdown } from "@/components/all-products/sort-dropdown";
+
+export default async function Search({
+    searchParams,
+}: {
+    searchParams: Promise<{ 
+        [key: string]: string | string[] | undefined, 
+        sort: "termurah" | "termahal" | "",
+        s: string,
+    }>;
+}) {
+    const searchText = typeof (await searchParams).s === "string" ? (await searchParams).s : "";
+    const page = parseInt((await searchParams).page as string) || 1;
+    const limit = 8;
+    const sort = (await searchParams).sort || "";
+
+    const { products, total } = await getProducts({ search: searchText, page, limit, sort });
+    const totalPages = Math.ceil(total / limit);
+
+    return (
+        <main className="container mx-auto my-10">
+            <div className="mb-5 mx-5">
+                <h2 className="text-white mb-3 text-xl font-semibold">
+                    Hasil untuk: "{searchText}"
+                </h2>
+                <SortDropdown />
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 md:gap-6 mx-5">
+                {products && products.length > 0 ? (
+                    products.map((product: Product) => (
+                        <Link
+                            href={`/product/${product.id}`}
+                            key={product.id}
+                            className="bg-zinc-800 gap-5 p-4 flex flex-col items-center md:p-6 rounded-lg"
+                        >
+                            <div className="rounded-md w-full h-[200px] overflow-hidden">
+                                <img
+                                    src={product.images[0]}
+                                    alt={product.title}
+                                    className="object-contain object-center h-full mx-auto"
+                                />
+                            </div>
+                            <div className="flex-[1]">
+                                <h4 className="text-zinc-300 font-semibold m-0">
+                                    {product.title}
+                                </h4>
+                                <p className="line-clamp-3 text-zinc-100/60 my-2 text-sm sm:text-md">
+                                    {product.description}
+                                </p>
+                                <span className="font-semibold">${product.price.toFixed(2)}</span>
+                            </div>
+                        </Link>
+                    ))
+                ) : (
+                    <p className="text-zinc-300 mx-5">Produk tidak ditemukan.</p>
+                )}
+            </div>
+            {totalPages > 1 && (
+                <PaginationControls currentPage={page} totalPages={totalPages} />
+            )}
+        </main>
+    );
+}

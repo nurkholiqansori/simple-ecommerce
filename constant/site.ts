@@ -1,0 +1,1 @@
+export const SITES_NAME = "My Olshop";
