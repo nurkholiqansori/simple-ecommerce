@@ -18,7 +18,7 @@ const HighlightProduct: React.FC<HighlightProductProps> = ({ products }) => {
         <>
             <div className="flex flex-col md:flex-row gap-5 mx-5">
                 <div className="flex-1 md:flex-1/2">
-                    <h1 className="font-black text-2xl mb-10">Highlight Product</h1>
+                    <h1 className="font-black text-2xl mb-10">Produk untukmu</h1>
                 
                     <Link
                         href={`/product/${bigProduct.id}`}
